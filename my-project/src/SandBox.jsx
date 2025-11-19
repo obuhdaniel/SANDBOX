@@ -237,7 +237,10 @@ export default function PythonSandbox() {
     setSidebarOpen(false);
   };
 
- const handleSubmit = async () => {
+  const exercise = exercises[currentExercise];
+  const score = completed.size;
+
+const handleSubmit = async () => {
   try {
     // ---- VALIDATION ----
     if (!userName || !userName.trim()) {
@@ -246,21 +249,23 @@ export default function PythonSandbox() {
       return;
     }
 
-    if (!score || !total) {
-      console.warn("Validation Error: score or total missing", { score, total });
-      alert("Missing score or total");
-      return;
-    }
+    // Convert completed Set to array for submission
+    const completedExercises = Array.from(completed).map(index => ({
+      exerciseId: exercises[index].id,
+      title: exercises[index].title
+    }));
 
     // Payload for backend
     const payload = {
       userName: userName.trim(),
       score: Number(score),
-      total: Number(total),
-      completedExercises: completedExercises || []
+      total: Number(20),
+      completedExercises: []
     };
 
     console.log("Submitting payload:", payload);
+
+    setIsSubmitting(true);
 
     // ---- SEND TO BACKEND ----
     const response = await fetch("https://raas.on.shiper.app/api/submit", {
@@ -290,6 +295,8 @@ export default function PythonSandbox() {
     console.log("✅ Submission Success:", data);
 
     alert("Your score was submitted successfully!");
+    setShowSubmitModal(false);
+    setUserName('');
 
   } catch (error) {
     // ---- NETWORK or UNKNOWN ERRORS ----
@@ -300,12 +307,13 @@ export default function PythonSandbox() {
     console.groupEnd();
 
     alert("Network error or server unreachable. Try again later.");
+  } finally {
+    setIsSubmitting(false);
   }
 };
 
 
-  const exercise = exercises[currentExercise];
-  const score = completed.size;
+  
 
   // Theme classes
   const themeClasses = {
