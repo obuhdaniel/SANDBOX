@@ -104,7 +104,7 @@ const exercises = [
     id: 15,
     title: "Division",
     description: "Print the result of 84 / 2",
-    expectedOutput: "42.0",
+    expectedOutput: "42",
     hint: "Use the / operator for division"
   },
   {
